@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Olá, {{ (nome + ' ' + sobrenome) if nome else 'Estranho' }}!</h1>
+<h2>A sua Insituição de ensino é {{ instituicao or 'None' }}</h2>
+<h2>Está cursando a disciplina de {{ disciplina_label or '' }}</h2>
+<h2>O IP do computador remoto é: {{ ip }}</h2>
+<h2>O host da aplicação é: {{ host }}</h2>
+
+<form method="POST" class="mt-3">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.nome.label(class="form-label") }}
+        {{ form.nome(class="form-control", style="width:300px") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.sobrenome.label(class="form-label") }}
+        {{ form.sobrenome(class="form-control", style="width:300px") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.instituicao.label(class="form-label") }}
+        {{ form.instituicao(class="form-control", style="width:300px") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.disciplina.label(class="form-label") }}
+        {{ form.disciplina(class="form-select", style="width:300px") }}
+    </div>
+
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+<p class="mt-4">The local date and time is <span class="moment-format" data-format="LLLL"></span>.</p>
+<p>That was <span class="moment-fromnow"></span>.</p>
+
+{% endblock %}

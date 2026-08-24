@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="POST" style="width:300px">
+    {{ form.hidden_tag() }}
+
+    <h3>Login:</h3>
+
+    <div class="mb-3">
+        {{ form.usuario(class="form-control", placeholder="Usuário ou e-mail") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.senha(class="form-control", placeholder="Informe a sua senha") }}
+    </div>
+
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+<p class="mt-4">The local date and time is <span class="moment-format" data-format="LLLL"></span>.</p>
+<p>That was <span class="moment-fromnow"></span>.</p>
+
+{% endblock %}
