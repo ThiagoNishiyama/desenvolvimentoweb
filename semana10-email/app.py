@@ -1,5 +1,6 @@
 import os
-import requests as http
+import json
+import urllib.request as http
 from flask import Flask, render_template, session, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -49,18 +50,26 @@ class NameForm(FlaskForm):
 def send_email(to, subject, template, **kwargs):
     api_key = os.environ.get('RESEND_API_KEY')
     if not api_key:
-        app.logger.warning('RESEND_API_KEY não configurado — e-mail não enviado')
+        app.logger.warning('RESEND_API_KEY nao configurado')
         return
     html_body  = render_template(template + '.html', **kwargs)
     recipients = to if isinstance(to, list) else [to]
     sender     = os.environ.get('MAIL_SENDER', 'Flasky <onboarding@resend.dev>')
+    payload = json.dumps({
+        'from': sender,
+        'to': recipients,
+        'subject': '[Flasky] ' + subject,
+        'html': html_body,
+    }).encode('utf-8')
+    req = http.Request(
+        'https://api.resend.com/emails',
+        data=payload,
+        headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'},
+        method='POST'
+    )
     try:
-        http.post(
-            'https://api.resend.com/emails',
-            headers={'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'},
-            json={'from': sender, 'to': recipients, 'subject': '[Flasky] ' + subject, 'html': html_body},
-            timeout=10,
-        )
+        with http.urlopen(req, timeout=10):
+            pass
     except Exception as e:
         app.logger.error(f'Erro ao enviar e-mail: {e}')
 
