@@ -1,6 +1,6 @@
 import os
 import json
-import urllib.request as http
+import subprocess
 from flask import Flask, render_template, session, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -14,10 +14,10 @@ app.config['SECRET_KEY'] = 'chave-secreta-semana10'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-FLASKY_ADMIN        = 'flaskaulasweb@zohomail.com'
+FLASKY_ADMIN         = 'flaskaulasweb@zohomail.com'
 FLASKY_STUDENT_EMAIL = 'c.nishiyama@aluno.ifsp.edu.br'
-FLASKY_PRONTUARIO   = os.environ.get('FLASKY_PRONTUARIO', 'PT3039536')
-FLASKY_NOME_ALUNO   = os.environ.get('FLASKY_NOME_ALUNO', 'Thiago Nishiyama')
+FLASKY_PRONTUARIO    = os.environ.get('FLASKY_PRONTUARIO', 'PT3039536')
+FLASKY_NOME_ALUNO    = os.environ.get('FLASKY_NOME_ALUNO', 'Thiago Nishiyama')
 
 db = SQLAlchemy(app)
 
@@ -48,30 +48,29 @@ class NameForm(FlaskForm):
 
 
 def send_email(to, subject, template, **kwargs):
-    api_key = os.environ.get('RESEND_API_KEY')
+    api_key = os.environ.get('SENDGRID_API_KEY')
     if not api_key:
-        app.logger.warning('RESEND_API_KEY nao configurado')
+        app.logger.warning('SENDGRID_API_KEY nao configurado')
         return
     html_body  = render_template(template + '.html', **kwargs)
     recipients = to if isinstance(to, list) else [to]
-    sender     = os.environ.get('MAIL_SENDER', 'Flasky <onboarding@resend.dev>')
     payload = json.dumps({
-        'from': sender,
-        'to': recipients,
+        'personalizations': [{'to': [{'email': r} for r in recipients]}],
+        'from': {'email': 'c.nishiyama@aluno.ifsp.edu.br', 'name': 'Flasky'},
         'subject': '[Flasky] ' + subject,
-        'html': html_body,
-    }).encode('utf-8')
-    req = http.Request(
-        'https://api.resend.com/emails',
-        data=payload,
-        headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'},
-        method='POST'
-    )
+        'content': [{'type': 'text/html', 'value': html_body}],
+    })
     try:
-        with http.urlopen(req, timeout=10):
-            pass
+        result = subprocess.run(
+            ['curl', '-s', '-X', 'POST', 'https://api.sendgrid.com/v3/mail/send',
+             '-H', 'Authorization: Bearer ' + api_key,
+             '-H', 'Content-Type: application/json',
+             '-d', payload],
+            capture_output=True, text=True, timeout=15
+        )
+        app.logger.info(f'SendGrid status={result.returncode} out={result.stdout[:200]}')
     except Exception as e:
-        app.logger.error(f'Erro ao enviar e-mail: {e}')
+        app.logger.error(f'Erro SendGrid: {e}')
 
 
 with app.app_context():
