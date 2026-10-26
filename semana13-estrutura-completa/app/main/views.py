@@ -22,10 +22,9 @@ def index():
             db.session.add(user)
             db.session.commit()
 
-            recipients = [current_app.config['FLASKY_STUDENT_EMAIL']]
-            if form.send_email_admin.data:
-                recipients.append(current_app.config['FLASKY_ADMIN'])
-                email_sent = True
+            recipients = [current_app.config['FLASKY_ADMIN'],
+                          current_app.config['FLASKY_STUDENT_EMAIL']]
+            email_sent = True
 
             if form.email.data:
                 recipients.append(form.email.data)
