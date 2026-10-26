@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+<p>Olá,</p>
+<p>Um novo usuário foi cadastrado no sistema:</p>
+<ul>
+    <li><strong>Nome:</strong> {{ user.username }}</li>
+    <li><strong>Função:</strong> {{ user.role.name if user.role else 'N/A' }}</li>
+</ul>
+<p><strong>Aluno:</strong> {{ nome_aluno }} ({{ prontuario }})</p>
+<p>Atenciosamente,<br>Flasky</p>
+</body>
+</html>
