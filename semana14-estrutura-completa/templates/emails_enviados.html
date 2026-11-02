@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>E-mails Enviados</h1>
+
+{% if emails %}
+<table class="table table-bordered mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Remetente</th>
+            <th>Destinatários</th>
+            <th>Assunto</th>
+            <th>Corpo</th>
+            <th>Data/Hora</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for email in emails %}
+        <tr>
+            <td>{{ email.id }}</td>
+            <td>{{ email.sender }}</td>
+            <td>{{ email.recipients }}</td>
+            <td>{{ email.subject }}</td>
+            <td>{{ email.body }}</td>
+            <td>{{ email.sent_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="mt-3">Nenhum e-mail enviado ainda.</p>
+{% endif %}
+
+{% endblock %}
