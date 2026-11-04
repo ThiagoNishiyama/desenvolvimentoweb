@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "_form.html" import render_form %}
+{% block title %}Flasky - Login{% endblock %}
+{% block content %}
+<h1 class="border-bottom pb-2 mb-3">Login</h1>
+{{ render_form(form) }}
+<br>
+<p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
+<p>New user? <a href="{{ url_for('auth.register') }}">Click here to register</a>.</p>
+{% endblock %}

@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="border-bottom pb-2">Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
+{% endblock %}
