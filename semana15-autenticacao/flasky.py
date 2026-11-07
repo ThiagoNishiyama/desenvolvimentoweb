@@ -1,4 +1,5 @@
 import os
+import unittest
 from app import create_app, db
 from app.models import User, Role
 
@@ -16,3 +17,10 @@ with app.app_context():
 @app.shell_context_processor
 def make_shell_context():
     return dict(db=db, User=User, Role=Role)
+
+
+@app.cli.command()
+def test():
+    """Executa os testes unitários."""
+    tests = unittest.TestLoader().discover('tests')
+    unittest.TextTestRunner(verbosity=2).run(tests)
